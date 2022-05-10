@@ -7,3 +7,11 @@ Format:
 ```
 Ausbildungsnachweis_88_02.05.-08.05.2022
 ```
+
+
+<br />
+
+Where the path to your folder full of Word files goes:
+```
+string current_folder
+```
