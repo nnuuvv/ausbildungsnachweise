@@ -4,16 +4,39 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
+using System.Threading;
+using System.Diagnostics;
 
 namespace ausbildungsnachweise
 {
     class Program
     {
+        public static string current_folder = @"C:\Users\VW1U904\OneDrive - Volkswagen AG\Docs\Documents\Ausbildungsnachweise\04_VVGG\Word";
         static void Main(string[] args)
-        {
-            Console.WriteLine(args);
-            string current_folder = @"C:\Users\VW1U904\OneDrive - Volkswagen AG\Docs\Documents\Ausbildungsnachweise\04_VVGG\Word";
+        { 
+            bool started = false;
+            foreach(var arg in args)
+            {
+                if(arg.StartsWith("-"))
+                {
+                    for(int count = Int32.Parse(arg.Remove(0, 1)); count > 0; count--)
+                    {
+                        Console.WriteLine("Files left: " + count);
+                        StartIteration();
+                        started = true;
+                    }
+                }                
+            }  
+            if(!started)
+            {
+                StartIteration();
+            }
+                     
+        }
 
+
+        static void StartIteration()
+        {
             string last_path = Directory.GetFiles(current_folder).Last();
             string last_file = last_path.Split("\\").Last();
 
@@ -32,10 +55,7 @@ namespace ausbildungsnachweise
             string newFile = $"Ausbildungsnachweis_{next_iteration}_{startDate.Day.ToString("00")}.{startDate.Month.ToString("00")}.-{endDate.ToString("d", CultureInfo.GetCultureInfo("de-DE"))}.docx";
             string newPath = last_path.Replace(last_file, newFile);
 
-            Console.WriteLine(newFile);
-            
-
-            //File.Copy(last_path, newPath);
+            Console.WriteLine("New Filename: " + newFile);
 
             Microsoft.Office.Interop.Word.Application fileOpen = new Microsoft.Office.Interop.Word.Application();
 
@@ -48,10 +68,13 @@ namespace ausbildungsnachweise
             FindAndReplace(fileOpen, last_secondDate, endDate.ToString("d", CultureInfo.GetCultureInfo("de-DE")));
             FindAndReplace(fileOpen, last_iteration, next_iteration);
 
+            Console.WriteLine("Saving");
             document.SaveAs2(newPath);
             fileOpen.Quit();
-
+            Console.WriteLine("Done");
+            Thread.Sleep(3000);
         }
+
 
         static void FindAndReplace(Microsoft.Office.Interop.Word.Application fileOpen, object findText, object replaceWithText)
         {
