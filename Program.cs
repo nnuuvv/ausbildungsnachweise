@@ -37,7 +37,7 @@ namespace ausbildungsnachweise
 
         static void StartIteration()
         {
-            string last_path = Directory.GetFiles(current_folder).Last();
+            string last_path = Directory.GetFiles(current_folder).OrderBy(x => Int32.Parse(x.Split("\\").Last().Split("_")[1])).Last();
             string last_file = last_path.Split("\\").Last();
 
             int last_iteration = Int32.Parse(last_file.Split("_")[1]);
